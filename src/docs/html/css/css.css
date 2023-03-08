@@ -5,13 +5,13 @@
 /* Sets Bold as default; and Extra Bold as bold */
 @font-face {
 	font-family: 'JetBrainsMono';
-	src: url('../fonts/JetBrainsMono-Bold.woff2'); /* [2] */
+	src: url('./fonts/JetBrainsMono-Bold.woff2'); /* [2] */
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Space Grotesk';
-	src: url('../fonts/SpaceGrotesk.woff2'); /* [1] */
+	src: url('./fonts/SpaceGrotesk.woff2'); /* [1] */
 }
 
 /* Defines the font family and text color and spacing */
