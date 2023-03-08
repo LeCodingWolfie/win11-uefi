@@ -1,0 +1,5 @@
+Scripting GDB might readily help to log multiple functions in particular (break by each), in comparison by Radare which is able to break on (any) call.
+It might be better to be able to log every UEFI function, its caller, and a tree of execution, similar to Intel Trace for UEFI debugging, which is also enabled by EDK II.
+And also be able to identify or digress between calls on the UEFI platform and the UEFI image, in order to identify if reconstructed code is similar with its counterpart.
+Furthermore, for (Windows) image calls, it should be able to research the assembly where the function is called, either after or within execution, which latter may mimic Radare.
+And also, enable logging of only certain function (whitelist), or otherwise create a blacklist.

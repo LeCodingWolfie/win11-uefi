@@ -1,0 +1,93 @@
+/***
+ * Made with the help of Dark Reader Dynamic Mode
+ ***/
+
+/* Sets Bold as default; and Extra Bold as bold */
+@font-face {
+	font-family: 'JetBrainsMono';
+	src: url('../fonts/JetBrainsMono-Bold.woff2'); /* [2] */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Space Grotesk';
+	src: url('../fonts/SpaceGrotesk.woff2'); /* [1] */
+}
+
+/* Defines the font family and text color and spacing */
+:root {
+	font-family: 'Space Grotesk';
+	color: rgb(232, 230, 227);
+	letter-spacing: -0.015em;
+}
+
+header {
+	margin-bottom: 2em;
+	font-size: 1.2em;
+}
+
+/* Overrides the default margins for headings */
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 1.1em;
+	margin-bottom: 0;
+}
+
+/* Removes the top and bottom margin to the first heading */
+body h1:first-child {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+pre {
+	background-color: #2e3440;
+	border-radius: 0.5em;
+	display: inline-flex; /* Allows to make the box as long as the text */
+	padding: 1em 0.5em;
+	padding-right: 2em;
+	margin: 0;
+}
+
+/* Overrides the font family set to code blocks */
+pre code {
+	font-family: 'JetBrainsMono';
+}
+
+/* Overrides the transparent color to make text-sized syntax-highlighted blocks */
+div .sourceCode {
+	background-color: #2e3440;
+}
+
+/* Defines a ligther color for the centered body; and darker for the background */
+body {
+	max-width: 85%;
+}
+
+html {
+	background: rgb(23, 24, 25) !important;
+}
+
+html, body, input, textarea, select, button, dialog {
+	background: #1e1e1e;
+}
+
+/* Colours quotes similar to their light counterparts; bolds and adds bottom length to the border */
+blockquote {
+	color: rgb(171, 164, 153);
+	border-left: 4px solid #555;
+}
+
+blockquote p {
+	padding-bottom: 2px;
+}
+
+/* Overrides the text color set within links */
+a, a:visited {
+	color: rgb(216, 212, 207)
+}
+
+
+/* References:
+	* [1]: https://github.com/floriankarsten/space-grotesk/blob/9d2b5fabceb942f139281d5cb2f0b895add8d5f7/fonts/ttf/SpaceGrotesk%5Bwght%5D.ttf 
+		(v2.0, compressed with woff2_compress)
+	* [2]: https://github.com/JetBrains/JetBrainsMono/blob/68685b56df8b0a5ec9bc677ca0e162bf6dcc355b/fonts/webfonts/JetBrainsMono-Bold.woff2 (v2.305)
+*/

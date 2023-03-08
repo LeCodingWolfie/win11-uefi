@@ -1,0 +1,12 @@
+Adds debugging symbols of relevant UEFI functions and types to GDB:
+	cat offsets | grep DxeCore:
+		add-symbol-file edk2/Build/OvmfX64/DEBUG_GCC5/X64/DxeCore.debug 0x7e88240
+
+Checks if both the allocate and memory type are AllocateAddress and EfiLoaderData:
+	info scope CoreAllocatePages (i.e. information about each variable and its registers)
+	b CoreAllocatePages if $rcx == 0x2 && $rdx == 0x2
+		(whereas RCX & RDX concord with disassembly)
+
+Logs a call on the loaded image seen logged at debug.log:
+	ProtectUefiImageCommon - [address]
+		b ProtectUefiImage
