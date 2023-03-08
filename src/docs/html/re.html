@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dissasembly</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #e1e4e8;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #e1e4e8; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #f97583; } /* Attribute */
+    code span.bn { color: #79b8ff; } /* BaseN */
+    code span.bu { color: #f97583; } /* BuiltIn */
+    code span.cf { color: #f97583; } /* ControlFlow */
+    code span.ch { color: #9ecbff; } /* Char */
+    code span.cn { color: #79b8ff; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #f97583; } /* DataType */
+    code span.dv { color: #79b8ff; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #f97583; font-weight: bold; } /* Extension */
+    code span.fl { color: #79b8ff; } /* Float */
+    code span.fu { color: #b392f0; } /* Function */
+    code span.im { color: #9ecbff; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #f97583; } /* Keyword */
+    code span.op { color: #e1e4e8; } /* Operator */
+    code span.ot { color: #b392f0; } /* Other */
+    code span.pp { color: #f97583; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #79b8ff; } /* SpecialChar */
+    code span.ss { color: #9ecbff; } /* SpecialString */
+    code span.st { color: #9ecbff; } /* String */
+    code span.va { color: #ffab70; } /* Variable */
+    code span.vs { color: #41a0ff; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" type="text/css" href="css/css.css"/>
+  <style>
+  /* header {
+      margin-bottom: 0em;
+      padding: 0.5em;
+      padding-left: 1.5em;
+      background: #3e4b66;
+      border-radius: 0.4em;
+      text-align: left;
+  } */
+
+  body h1 + h2 {
+      margin-top: 0.5em;
+      margin-bottom: 0;
+  }
+
+  blockquote + hr {
+      height: 2px;
+      background-color: #333;
+  }
+
+  div + hr {
+      height: 4px;
+      margin: 2em 0em 1.5em 0em;
+      background-color: #ddd;
+  }
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<!-- markdownlint-disable -->
+<h1
+id="efiinitcreateinputparametersex">EfiInitCreateInputParametersEx</h1>
+<h2 id="handleprotocol">HandleProtocol</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>    EFI_BOOT_SERVICES <span class="op">*</span>bootServices <span class="op">=</span> table<span class="op">-&gt;</span>BootServices<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    EFI_STATUS status <span class="op">=</span> bootServices<span class="op">-&gt;</span>HandleProtocol<span class="op">(</span>handle<span class="op">,</span> <span class="op">&amp;</span>EfiLoadedImageProtocol<span class="op">,</span> <span class="co">/**/</span><span class="op">);</span></span></code></pre></div>
+<h3 id="to-find-the-method"><em>To find the method</em></h3>
+<p>In Ghidra, the HandleProtocol call is rather difficult to grasp on
+the decompilation:</p>
+<pre><code>    lVar2 = (**(code **)(*(longlong *)(param_2 + 0x60) + 0x98))(param_1,&amp;EfiLoadedImageProtocol,&amp;local_res10);</code></pre>
+<p>Therein, the code represented as assembly language follows:</p>
+<pre><code>    MOV RAX, qword ptr [param_2 + 0x60]
+    LEA RDX, [EfiLoadedImageProtocol]
+    MOV RAX, qword ptr [RAX + 0x98]
+    CALL RAX</code></pre>
+<p>where param_2 (RDX) is the system table.</p>
+<p>In fact, pointer aritmetic is performed on the table address, by
+moving the address forward about 96 bytes, and then 152 B, and then
+calling on that address; like a function pointer. This suggests that a
+method is being accessed from an structure inside the table.</p>
+<p>Thus, is matter of checking which members are pointed to in each
+structure as defined in UefiSpec.h, by counting how much bytes each
+member occupies — up to down:</p>
+<pre><code>    0x60:
+      * EFI_TABLE_HEADER (-&gt; 24 B)
+      * FirmwareVendor * (-&gt; 8 B) # should be 6 B for 7 times per! (but nevermind)
+      * FirmwareRevision (-&gt; 4 B)
+      * ConsoleInHandle to RuntimeServices (-&gt; 8 B per pointer, i.e. 7 times / 56 B)
+
+    --- Points to EFI_BOOT_SERVICES *
+
+    0x98:
+      * EFI_TABLE_HEADER (-&gt; 24 B)
+      * RaiseTPL to UninstallProtocolInterface (-&gt; 8 B per, i.e. 16 times / 128 B)
+
+    --- Points to HandleProtocol</code></pre>
+<p>considering each pointer size is of 8 bytes (i.e. 64-bit) <sup>(see
+<a href="https://stackoverflow.com/a/6751809">2</a>, <a
+href="https://stackoverflow.com/a/56209070">3</a>)</sup>, specially
+since these might be near pointers and respectively change of size
+accordingly with the bit architecture <sup>(<a
+href="https://cdrdv2.intel.com/v1/dl/getContent/671436">4</a>: §
+4.3.).</p>
+<p>That means EFI_BOOT_SERVICES struct is accessed from the table to
+point to the HandleProtocol method — so it gets called.</p>
+<h3 id="to-discover-the-parameters"><em>To discover the
+parameters</em></h3>
+<p><em>Besides the handle</em>, the LEA instruction shows that
+EfiLoadedImageProtocol address is used, as it stores its address on RDX
+<sup>(see <a href="https://www.felixcloutier.com/x86/lea">5</a>)</sup> –
+so <code>&amp;EfiLoadedImageProtocol</code> is used.</p>
+<h4 id="local_res10"><code>local_res10</code></h4>
+<p>Defined in Ghidra as:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> param_3 <span class="op">=&gt;</span> local_res10<span class="op">,</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x38</span><span class="op">]</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    ----------------------------------------</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> <span class="kw">R8</span><span class="op">,</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x38</span><span class="op">]</span></span></code></pre></div>
+<p>Accordingly with the UEFI specification, the final argument is an
+interface variable to be added a value to
+(<code>(VOID **)Interface</code>), which will return the loaded image if
+already loaded <sup>(see <a
+href="https://uefi.org/sites/default/files/resources/UEFI_Spec_2_9_2021_03_18.pdf">6</a>:
+§ 1.8.2. &amp; p. 188-9)</sup>. Thus, as we try to get the loaded image,
+one should use <code>EFI_LOADED_IMAGE_PROTOCOL</code> type on the
+Interface variable <sup>(see <em>id.</em> § 2.4)</sup>.</p>
+<h2 id="next-handleprotocol"><em>Next</em> HandleProtocol</h2>
+<p>Again, another similar call, that in assembly language follows:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RDI</span><span class="op">,</span> param_2 <span class="co">; table is passed to RDI</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RCX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x38</span><span class="op">]</span> <span class="co">; i.e. &amp;local_res10</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> <span class="kw">RDX</span><span class="op">,</span> <span class="op">[</span>EfiDevicePathProtocol<span class="op">]</span> <span class="co">; as prev. i.e. &amp;EfiDevicePathProtocol</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RDI</span> <span class="op">+</span> <span class="bn">0x60</span><span class="op">]</span> <span class="co">; like prev. moves 96 bytes forward from the table</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RCX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RCX</span> <span class="op">+</span> <span class="bn">0x18</span><span class="op">]</span> <span class="co">; moves up 24 B from the loaded image</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RAX</span> <span class="op">+</span> <span class="bn">0x98</span><span class="op">]</span> <span class="co">; id. moves up 156 B from table</span></span></code></pre></div>
+<p>Now, matter is to find what the loaded image points to:</p>
+<pre><code>    0x18:
+      * Revision (-&gt; 4 B)
+      * ParentHandle &amp; SystemTable (-&gt; 8 B per, i.e. 16 B)
+
+    --- Points to DeviceHandle</code></pre>
+<p>Like the last time, for the Interface variable, the type is
+<code>EFI_DEVICE_PATH_PROTOCOL</code> from EfiDevicePathProtocol
+variable, and is same way casted to <code>VOID **</code>.</p>
+<h2 id="another-call-on-bootservices">Another call on BootServices</h2>
+<p>Just as the previous calls, BootServices is pointed from the system
+table, which then points to required function to be called:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RDI</span> <span class="op">+</span> <span class="bn">0x60</span><span class="op">]</span> <span class="co">; Again, RDI (i.e. system table) is used to point to BootServices</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RAX</span> <span class="op">+</span> <span class="bn">0x28</span><span class="op">]</span> <span class="co">; Moves up 40 B from BootServices</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">CALL</span> <span class="kw">RAX</span> <span class="co">; Calls on that address</span></span></code></pre></div>
+<p>Yet, it calls on AllocatePages, whereas in ReactOS, BootServices is
+not pointed to a function anymore <sup>(see <a
+href="https://github.com/reactos/reactos/blob/fe777bb52f67921b26bf5791b06a5c712f5be3f6/boot/environ/app/bootmgr/efiemu.c#L862">1</a>)</sup>,
+since:</p>
+<pre><code>    0x28:
+      * EFI_TABLE_HEADER (-&gt; 24 B)
+      * RaiseTPL &amp; RestoreTPL (-&gt; 8 B per, i.e. 16 B)
+
+    --- Points to AllocateAddress</code></pre>
+<p>By analysing the whole assembly, it follows:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">EBX</span><span class="op">,</span> <span class="bn">0x2</span>  <span class="co">; Moves 0x2 to EBX</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RDI</span> <span class="op">+</span> <span class="bn">0x60</span><span class="op">]</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> <span class="kw">R9</span><span class="op">,</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x48</span><span class="op">]</span>                    <span class="co">; Stores an in-stack address to R9</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x48</span><span class="op">],</span> <span class="bn">0x102000</span>    <span class="co">; Moves 0x102000 to the address</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> R8D<span class="op">,</span> <span class="op">[</span><span class="kw">RBX</span> <span class="op">+</span> <span class="op">-</span><span class="bn">0x1</span><span class="op">]</span>                   <span class="co">; &quot;Should&quot; store the address of RBX by one byte minus (e.g. param_3)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">EDX</span><span class="op">,</span> <span class="kw">EBX</span>                            <span class="co">; Moves 0x2 to EDX</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">ECX</span><span class="op">,</span> <span class="kw">EBX</span>                            <span class="co">; id. to ECX</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RAX</span> <span class="op">+</span> <span class="bn">0x28</span><span class="op">]</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">CALL</span> <span class="kw">RAX</span></span></code></pre></div>
+<p>Thence, the function is called as:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    AllocatePages<span class="op">(</span><span class="bn">0x2</span><span class="op">,</span> <span class="bn">0x2</span><span class="op">,</span> <span class="op">-</span><span class="bn">0x1</span><span class="op">,</span> <span class="op">&amp;</span><span class="bn">0x102000</span><span class="op">);</span> <span class="co">// Here, though, -0x1 is just used as a placeholder, the exact value is indeterminate</span></span></code></pre></div>
+<p>According to the function definition in UefiSpec.h <sup>(see <a
+href="https://github.com/tianocore/edk2/blob/fca5de51e1fd2f3c5ddbf5974d785f0f6b2f6c38/MdePkg/Include/Uefi/UefiSpec.h#L187">7</a>)</sup>,
+it requires two enum-valued parameters (i.e. types), where 0x2 actually
+corresponds properly as:</p>
+<pre><code>    AllocatePages(AllocateAddress, EfiLoaderData, ?, &amp;0x102000);</code></pre>
+<p>In fact, the EfiLoaderData type is used in a wrap-up method for
+AllocatePages in the ReactOS code, whereas AllocateAddress is used
+elsewhere. <sup>(see <a
+href="https://github.com/reactos/reactos/blob/23ecbb3ed5f1b2881e28e54cccec16586e8241fb/boot/environ/lib/firmware/efi/firmware.c#L1591">8</a>
+&amp; <a
+href="https://github.com/reactos/reactos/blob/23ecbb3ed5f1b2881e28e54cccec16586e8241fb/boot/environ/lib/firmware/efi/firmware.c#L1936">9</a>)</sup></p>
+<p>Two issues arise:</p>
+<blockquote>
+<ol type="1">
+<li>is to find the value of <code>RBX + -0x1</code> or
+<code>RBX - 1</code> (in Cutter/Rizin), which “should” be behind the
+register address in memory.</li>
+<li>is the reason of which a pointer to 0x102000 is used as the address,
+number which throws many variate results on a single search, such as the
+kernel32.dll size.</li>
+</ol>
+</blockquote>
+<p>These issues represent (somehow) a challenge that requires dynamic
+analysis, and so debugging UEFI images is. <del>Thus, this line is
+omitted.</del></p>
+<p>Not so fast, let’s dig deeper why.</p>
+<h3 id="lea-magic"><code>LEA</code> <em>magic</em> 🪄</h3>
+<p>It’s possible you might’ve noticed a flaw on explaining the LEA
+logic, and it’s in fact.</p>
+<h2 id="pages"><em>Pages</em>?</h2>
+<p>In fact, <em>pages</em>. But let’s see why.</p>
+<p>The following assembly code follows:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RCX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RBP</span> <span class="op">+</span> <span class="bn">0x38</span><span class="op">]</span> <span class="co">; Moves local_res10 (or the loaded image) to RCX</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RCX</span> <span class="op">+</span> <span class="bn">0x40</span><span class="op">]</span>  <span class="co">; Moves up 64 B from the loaded image</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span>DAT_1020f8f8<span class="op">],</span> <span class="kw">RAX</span>  <span class="co">; Stores the value to some address</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">EAX</span><span class="op">,</span> <span class="dt">dword</span> <span class="dt">ptr</span> <span class="op">[</span><span class="kw">RCX</span> <span class="op">+</span> <span class="bn">0x48</span><span class="op">]</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="dt">dword</span> <span class="dt">ptr</span> <span class="op">[</span>DAT_1020f900<span class="op">],</span> <span class="kw">EAX</span>  <span class="co">; Moves up 72 B and stores it</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">ECX</span><span class="op">,</span> <span class="dt">dword</span> <span class="dt">ptr</span> <span class="op">[</span>DAT_1020f900<span class="op">]</span>  <span class="co">; Takes the &quot;72 B&quot; value to ECX</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">MOV</span> <span class="kw">RAX</span><span class="op">,</span> <span class="dt">qword</span> <span class="dt">ptr</span> <span class="op">[</span>DAT_1020f8f8<span class="op">]</span>  <span class="co">; Stores the &quot;64 B&quot; address in RAX</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">SHR</span> <span class="kw">RAX</span><span class="op">,</span> <span class="bn">0xc</span>                        <span class="co">; Moves the value 12 bits right (&gt;&gt;) – see [10, 11]</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">LEA</span> <span class="kw">EDX</span><span class="op">,</span> <span class="op">[</span><span class="kw">ECX</span> <span class="op">+</span> <span class="bn">0xfff</span><span class="op">]</span>  <span class="co">; Adds 0xfff to &quot;72 B&quot; and stores it in EDX</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">AND</span> <span class="kw">EDX</span><span class="op">,</span> <span class="op">-</span><span class="bn">0x1000</span>  <span class="co">; Performs the bitwise AND as: EDX &amp; -0x1000 (i.e. 0xfffff000)</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">CMP</span> <span class="kw">EDX</span><span class="op">,</span> <span class="kw">ECX</span>  <span class="co">; &quot;Compares&quot; EDX &amp; ECX (&quot;72 B&quot;) where if EDX is bigger, the carry flag is set – thus, ECX should be bigger; so it acts as part of a conditional – see [12, 13]</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">JC</span> LAB_1003f906  <span class="co">; As a conditional jump, if the carry flag is set, jumps to an address – see [14]</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    # LAB_1003f906</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">XOR</span> <span class="kw">EAX</span><span class="op">,</span> <span class="kw">EAX</span>  <span class="co">; Simply means that EAX is set to 0 since it is equal to itself – see [15]</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                  <span class="co">; Thus, it does not jump inside the conditional (which would&#39;ve, if the condition was met), and runs up to the end of the function, as shown by Cutter.</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    --------</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">SHR</span> <span class="kw">EDX</span><span class="op">,</span> <span class="bn">0xc</span>  <span class="co">; Moves EDX 12 bits right</span></span></code></pre></div>
+<p><sup>For reference: (<a
+href="https://c9x.me/x86/html/file_module_x86_id_285.html">10</a>, <a
+href="https://www.ibm.com/docs/en/i/7.2?topic=expressions-bitwise-left-right-shift-operators">11</a>,
+<a href="https://stackoverflow.com/a/45898850">12</a>, <a
+href="https://stackoverflow.com/a/61568237">13</a>, <a
+href="https://www.keil.com/support/man/docs/is51/is51_jc.htm">14</a>, <a
+href="https://stackoverflow.com/a/4749620">15</a>)</sup></p>
+<p>Bigger and more complex than the previous assemblies, in fact.</p>
+<p>In summary, from what we know, what it does is just some
+back-and-forth with byte operations.</p>
+<p>Anyways, it’s worth looking at what the “64 B” &amp; “72 B” values
+point to:</p>
+<pre><code>    0x40:
+      * Revision (-&gt; 4 B)
+      * ParentHandle to LoadOptions (-&gt; 8 B per, i.e. 56 B / 7 times)
+
+    --- Points to ImageBase
+
+    0x48:
+      * ImageBase (-&gt; 8 B)
+
+    --- Points to ImageSize</code></pre>
+<p>Thus, code follows:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    UINT64 <span class="op">*</span>imageBase <span class="op">=</span> loadedImage<span class="op">-&gt;</span>ImageBase<span class="op">;</span> <span class="co">// i.e. qword ptr</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    UINT32 imageSize <span class="op">=</span> loadedImage<span class="op">-&gt;</span>ImageSize<span class="op">;</span> <span class="co">// i.e. dword ptr</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    UINT64 baseSHR <span class="op">=</span> <span class="op">*</span>imageBase <span class="op">&gt;&gt;</span> <span class="bn">0xc</span><span class="op">;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    UINT32 <span class="op">*</span>sizeFFF <span class="op">=</span> <span class="op">&amp;</span>imageSize <span class="op">+</span> <span class="bn">0xfff</span><span class="op">;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    UINT32 sizeAND <span class="op">=</span> <span class="op">*</span>sizeFFF <span class="op">&amp;</span> <span class="bn">0xfffff000</span><span class="op">;</span> <span class="co">// i.e. -0x1000 (due to two&#39;s complement)</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>sizeAND <span class="op">&lt;</span> imageSize<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    UINT32 sizeSHR <span class="op">=</span> sizeAND <span class="op">&gt;&gt;</span> <span class="bn">0xc</span><span class="op">;</span></span></code></pre></div>
+<p>Due to the otherwise odd programming, guided from ReactOS code, all
+has to do with <em>paging</em>.</p>
+<p>To understand so, one step is to simplify common values into
+variables – i.e. every hexadecimal number:</p>
+<blockquote>
+<p><strong>0xfff and -0x1000:</strong> 0xfff is 4095, whereas 0x1000 is
+4096. Thus, 0xfff is 0x1000 subtracted by one.</p>
+</blockquote>
+<p>Next is to understand and then name each value:</p>
+<blockquote>
+<p><strong>4096:</strong> In AllocatePages each page is defined as about
+4 KiB <sup>(<a
+href="https://uefi.org/sites/default/files/resources/UEFI_Spec_2_9_2021_03_18.pdf">6</a>:
+p. 166)</sup>, where 4096 B denotes 4 KB; thus, 4096 is the page size in
+bytes.</p>
+<p><strong>0xc (12):</strong> Can be taken as a SHIFT variable, so can
+be named as PAGE_SHIFT.</p>
+</blockquote>
+<hr />
+<blockquote>
+<p>Based on ReactOS code: <sup>(see <a
+href="https://github.com/reactos/reactos/blob/fe777bb52f67921b26bf5791b06a5c712f5be3f6/boot/environ/app/bootmgr/efiemu.c#L862">1</a>)</sup>
+sizeFFF (1) is then the end of the first page in the image, and sizeAND
+(2) the count of the pages that the image holds. For baseSHR (3), the
+shift seems to convert bytes to pages. <sup>(see <a
+href="https://github.com/mirror/reactos/blob/c6d2b35ffc91e09f50dfb214ea58237509329d6b/reactos/ntoskrnl/mm/ARM3/mminit.c#L514">16</a>)</sup>
+In that case, it can be named to be the basePage.</p>
+</blockquote>
+<p>What about the conditional? The code in ReactOS doesn’t include one,
+so why does the assembly do? Considering it should, in any case, the
+number of pages shouldn’t be bigger than the image size – since the
+amount of pages was calculated from the image size, so that line of code
+is omitted.</p>
+<p>Then, the code would follow as:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    <span class="pp">#define PAGE_SHIFT 0xc;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">#define PAGE_SIZE 0x1000; </span><span class="co">// i.e. 4096 B</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    UINT64 basePage <span class="op">=</span> <span class="op">*</span>imageBase <span class="op">&gt;&gt;</span> PAGE_SHIFT</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    UINT32 <span class="op">*</span>endOfFirstPage <span class="op">=</span> <span class="op">&amp;</span>imageSize <span class="op">+</span> <span class="op">(</span>PAGE_SIZE <span class="op">-</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    UINT32 pageCount <span class="op">=</span> <span class="op">(*</span>endOfFirstPage <span class="op">+</span> <span class="op">-</span>PAGE_SIZE<span class="op">)</span> <span class="op">&gt;&gt;</span> PAGE_SHIFT<span class="op">;</span></span></code></pre></div>
+<hr />
+<p>As a side note, the analysis and code syntax were based on ReactOS
+code with the help of Doxygen <a
+href="https://github.com/reactos/reactos/blob/fe777bb52f67921b26bf5791b06a5c712f5be3f6/boot/environ/app/bootmgr/efiemu.c#L862">1</a>.</p>
+</body>
+</html>
